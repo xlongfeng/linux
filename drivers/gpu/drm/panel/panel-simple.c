@@ -438,6 +438,30 @@ static const struct panel_desc ampire_am800480r3tmqwa1h = {
 	.bus_format = MEDIA_BUS_FMT_RGB666_1X18,
 };
 
+static const struct drm_display_mode auo_a104sn03_mode = {
+	.clock = 40000,
+	.hdisplay = 800,
+	.hsync_start = 800 + 40,
+	.hsync_end = 800 + 40 + 216,
+	.htotal = 800 + 40 + 216 + 128,
+	.vdisplay = 600,
+	.vsync_start = 600 + 10,
+	.vsync_end = 600 + 10 + 35,
+	.vtotal = 600 + 10 + 35 + 2,
+	.vrefresh = 60,
+};
+
+static const struct panel_desc auo_a104sn03 = {
+	.modes = &auo_a104sn03_mode,
+	.num_modes = 1,
+	.bpc = 6,
+	.size = {
+		.width = 211,
+		.height = 158,
+	},
+	.bus_format = MEDIA_BUS_FMT_RGB666_1X7X3_SPWG,
+};
+
 static const struct drm_display_mode auo_b101aw03_mode = {
 	.clock = 51450,
 	.hdisplay = 1024,
@@ -1946,6 +1970,9 @@ static const struct of_device_id platform_of_match[] = {
 	}, {
 		.compatible = "ampire,am800480r3tmqwa1h",
 		.data = &ampire_am800480r3tmqwa1h,
+	}, {
+		.compatible = "auo,a104sn03",
+		.data = &auo_a104sn03,
 	}, {
 		.compatible = "auo,b101aw03",
 		.data = &auo_b101aw03,
