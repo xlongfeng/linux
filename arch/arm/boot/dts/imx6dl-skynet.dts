@@ -260,8 +260,8 @@
 			vdd2_reg: regulator@1 {
 				regulator-compatible = "vdd2";
 				reg = <1>;
-				regulator-min-microvolt = <600000>;
-				regulator-max-microvolt = <1500000>;
+				regulator-min-microvolt = <3300000>;
+				regulator-max-microvolt = <3300000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
@@ -657,7 +657,7 @@
 	pinctrl-0 = <&pinctrl_usdhc2>;
 	bus-width = <4>;
 	cd-gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
-	/* vmmc-supply = <&vdd2_reg>; */
+	vmmc-supply = <&vdd2_reg>;
 	status = "okay";
 };
 
@@ -666,7 +666,7 @@
 	pinctrl-0 = <&pinctrl_usdhc3>;
 	bus-width = <4>;
 	non-removable;
-	/* vmmc-supply = <&vdd2_reg>; */
+	vmmc-supply = <&vdd2_reg>;
 	cap-power-off-card;
 	keep-power-in-suspend;
 	status = "okay";

@@ -496,6 +496,7 @@ static int tps65910_get_voltage_dcdc_sel(struct regulator_dev *dev)
 	/* multiplier 0 == 1 but 2,3 normal */
 	if (!mult)
 		mult = 1;
+	mult = (mult - 1) *  VDD1_2_NUM_VOLT_FINE;
 
 	if (sr) {
 		/* normalise to valid range */
@@ -503,7 +504,7 @@ static int tps65910_get_voltage_dcdc_sel(struct regulator_dev *dev)
 			srvsel = 3;
 		if (srvsel > vselmax)
 			srvsel = vselmax;
-		return srvsel - 3;
+		return mult + srvsel - 3;
 	} else {
 
 		/* normalise to valid range*/
@@ -511,7 +512,7 @@ static int tps65910_get_voltage_dcdc_sel(struct regulator_dev *dev)
 			opvsel = 3;
 		if (opvsel > vselmax)
 			opvsel = vselmax;
-		return opvsel - 3;
+		return mult + opvsel - 3;
 	}
 	return -EINVAL;
 }
