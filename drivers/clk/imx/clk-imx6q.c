@@ -117,7 +117,7 @@ static struct clk_div_table post_div_table[] = {
 	{ /* sentinel */ }
 };
 
-static struct clk_div_table video_div_table[] = {
+static struct clk_div_table av_div_table[] = {
 	{ .val = 0, .div = 1, },
 	{ .val = 1, .div = 2, },
 	{ .val = 2, .div = 1, },
@@ -436,8 +436,8 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
 	if (clk_on_imx6q() && imx_get_soc_revision() == IMX_CHIP_REVISION_1_0) {
 		post_div_table[1].div = 1;
 		post_div_table[2].div = 1;
-		video_div_table[1].div = 1;
-		video_div_table[3].div = 1;
+		av_div_table[1].div = 1;
+		av_div_table[3].div = 1;
 	}
 
 	clk[IMX6QDL_PLL1_BYPASS_SRC] = imx_clk_mux("pll1_bypass_src", base + 0x00, 14, 2, pll_bypass_src_sels, ARRAY_SIZE(pll_bypass_src_sels));
@@ -546,9 +546,9 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
 	}
 
 	clk[IMX6QDL_CLK_PLL4_POST_DIV] = clk_register_divider_table(NULL, "pll4_post_div", "pll4_audio", CLK_SET_RATE_PARENT, base + 0x70, 19, 2, 0, post_div_table, &imx_ccm_lock);
-	clk[IMX6QDL_CLK_PLL4_AUDIO_DIV] = clk_register_divider(NULL, "pll4_audio_div", "pll4_post_div", CLK_SET_RATE_PARENT, base + 0x170, 15, 1, 0, &imx_ccm_lock);
+	clk[IMX6QDL_CLK_PLL4_AUDIO_DIV] = imx_clk_audio_divider_table(NULL, "pll4_audio_div", "pll4_post_div", CLK_SET_RATE_PARENT, base + 0x170, 0, av_div_table, &imx_ccm_lock);
 	clk[IMX6QDL_CLK_PLL5_POST_DIV] = clk_register_divider_table(NULL, "pll5_post_div", "pll5_video", CLK_SET_RATE_PARENT, base + 0xa0, 19, 2, 0, post_div_table, &imx_ccm_lock);
-	clk[IMX6QDL_CLK_PLL5_VIDEO_DIV] = clk_register_divider_table(NULL, "pll5_video_div", "pll5_post_div", CLK_SET_RATE_PARENT, base + 0x170, 30, 2, 0, video_div_table, &imx_ccm_lock);
+	clk[IMX6QDL_CLK_PLL5_VIDEO_DIV] = clk_register_divider_table(NULL, "pll5_video_div", "pll5_post_div", CLK_SET_RATE_PARENT, base + 0x170, 30, 2, 0, av_div_table, &imx_ccm_lock);
 
 	np = ccm_node;
 	base = of_iomap(np, 0);
@@ -890,9 +890,14 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
 	 */
 	ret = clk_set_parent(clk[IMX6QDL_CLK_CKO2_SEL], clk[IMX6QDL_CLK_OSC]);
 	if (!ret)
-		ret = clk_set_parent(clk[IMX6QDL_CLK_CKO], clk[IMX6QDL_CLK_CKO2]);
+		ret = clk_set_parent(clk[IMX6QDL_CLK_CKO], clk[IMX6QDL_CLK_CKO1]);
 	if (ret)
 		pr_warn("failed to set up CLKO: %d\n", ret);
+
+	clk_set_parent(clk[IMX6QDL_CLK_CKO1_SEL], clk[IMX6QDL_CLK_PLL4_AUDIO_DIV]);
+	clk_set_parent(clk[IMX6QDL_CLK_SSI1_SEL], clk[IMX6QDL_CLK_PLL4_AUDIO_DIV]);
+	clk_set_rate(clk[IMX6QDL_CLK_PLL4_AUDIO_DIV], 96000000);
+	clk_set_rate(clk[IMX6QDL_CLK_CKO1_PODF], 12000000),
 
 	/* Audio-related clocks configuration */
 	clk_set_parent(clk[IMX6QDL_CLK_SPDIF_SEL], clk[IMX6QDL_CLK_PLL3_PFD3_454M]);

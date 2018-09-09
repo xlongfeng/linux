@@ -187,6 +187,14 @@ static void regmap_format_2_6_write(struct regmap *map,
 	*out = (reg << 6) | val;
 }
 
+static void regmap_format_3_5_write(struct regmap *map,
+				     unsigned int reg, unsigned int val)
+{
+	u8 *out = map->work_buf;
+
+	*out = (reg << 5) | val;
+}
+
 static void regmap_format_4_12_write(struct regmap *map,
 				     unsigned int reg, unsigned int val)
 {
@@ -727,6 +735,16 @@ struct regmap *__regmap_init(struct device *dev,
 		switch (config->val_bits) {
 		case 6:
 			map->format.format_write = regmap_format_2_6_write;
+			break;
+		default:
+			goto err_map;
+		}
+		break;
+
+	case 3:
+		switch (config->val_bits) {
+		case 5:
+			map->format.format_write = regmap_format_3_5_write;
 			break;
 		default:
 			goto err_map;

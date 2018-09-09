@@ -73,6 +73,11 @@ struct clk *imx_clk_fixup_mux(const char *name, void __iomem *reg,
 			      u8 shift, u8 width, const char **parents,
 			      int num_parents, void (*fixup)(u32 *val));
 
+struct clk *imx_clk_audio_divider_table(struct device *dev, const char *name,
+		const char *parent_name, unsigned long flags,
+		void __iomem *reg, u8 clk_divider_flags,
+		const struct clk_div_table *table, spinlock_t *lock);
+
 static inline struct clk *imx_clk_fixed(const char *name, int rate)
 {
 	return clk_register_fixed_rate(NULL, name, NULL, 0, rate);
