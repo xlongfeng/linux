@@ -113,6 +113,22 @@
 			gpios = <&gpio4 10 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_ENTER>;
 		};
+
+		left {
+			label = "Left";
+			gpios = <&gpio4 7 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_LEFT>;
+			disc,left;
+			debounce-interval = <0>;
+		};
+
+		right {
+			label = "Right";
+			gpios = <&gpio4 6 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RIGHT>;
+			disc,right;
+			debounce-interval = <0>;
+		};
 	};
 
 	sound {
@@ -459,6 +475,8 @@
 				MX6QDL_PAD_KEY_COL1__GPIO4_IO08		0x17000
 				MX6QDL_PAD_NANDF_D5__GPIO2_IO05		0x17000
 				MX6QDL_PAD_KEY_COL2__GPIO4_IO10		0x17000
+				MX6QDL_PAD_KEY_COL0__GPIO4_IO06		0x17000
+				MX6QDL_PAD_KEY_ROW0__GPIO4_IO07		0x17000
 			>;
 		};
 

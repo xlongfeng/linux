@@ -59,6 +59,10 @@ struct gpio_keys_drvdata {
 	struct gpio_button_data data[0];
 };
 
+
+static struct gpio_desc *left_gpiod;
+static struct gpio_desc *right_gpiod;
+
 /*
  * SYSFS interface for enabling/disabling keys and switches:
  *
@@ -357,12 +361,44 @@ static const struct attribute_group gpio_keys_attr_group = {
 	.attrs = gpio_keys_attrs,
 };
 
+static void disc_gpio_report_event(struct gpio_button_data *bdata)
+{
+
+	const struct gpio_keys_button *button = bdata->button;
+	struct input_dev *input = bdata->input;
+	unsigned int type = button->type ?: EV_KEY;
+	int state = 0;
+	int compare = 0;
+
+	if (!left_gpiod || !right_gpiod)
+		return;
+
+	state = gpiod_get_value_cansleep(bdata->gpiod);
+
+	if (button->disc_left) {
+		compare = gpiod_get_value_cansleep(right_gpiod);
+	} else if (button->disc_right) {
+		compare = gpiod_get_value_cansleep(left_gpiod);
+	}
+
+	if (state != compare) {
+		input_event(input, type, button->code, 1);
+		input_event(input, type, button->code, 0);
+		input_sync(input);
+	}
+}
+
 static void gpio_keys_gpio_report_event(struct gpio_button_data *bdata)
 {
 	const struct gpio_keys_button *button = bdata->button;
 	struct input_dev *input = bdata->input;
 	unsigned int type = button->type ?: EV_KEY;
 	int state;
+
+	if (button->disc_left || button->disc_right) {
+		disc_gpio_report_event(bdata);
+		return;
+	}
 
 	state = gpiod_get_value_cansleep(bdata->gpiod);
 	if (state < 0) {
@@ -540,6 +576,11 @@ static int gpio_keys_setup_key(struct platform_device *pdev,
 	}
 
 	if (bdata->gpiod) {
+		if (button->disc_left) {
+			left_gpiod = bdata->gpiod;
+		} else if (button->disc_right) {
+			right_gpiod = bdata->gpiod;
+		}
 		if (button->debounce_interval) {
 			error = gpiod_set_debounce(bdata->gpiod,
 					button->debounce_interval * 1000);
@@ -725,6 +766,9 @@ gpio_keys_get_devtree_pdata(struct device *dev)
 		if (fwnode_property_read_u32(child, "debounce-interval",
 					 &button->debounce_interval))
 			button->debounce_interval = 5;
+
+		button->disc_left = fwnode_property_read_bool(child, "disc,left");
+		button->disc_right = fwnode_property_read_bool(child, "disc,right");
 
 		button++;
 	}
