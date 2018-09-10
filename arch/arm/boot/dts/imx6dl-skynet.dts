@@ -144,9 +144,12 @@
 
 	backlight_lvds: backlight-lvds {
 		compatible = "pwm-backlight";
-		pwms = <&pwm3 0 5000000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_backlight_lvds>;
+		pwms = <&pwm3 0 100000>;
 		brightness-levels = <0 4 8 16 32 64 128 255>;
-		default-brightness-level = <7>;
+		default-brightness-level = <5>;
+		enable-gpios = <&gpio6 2 GPIO_ACTIVE_HIGH>;
 		power-supply = <&reg_sw_5p0v>;
 		status = "okay";
 	};
@@ -430,17 +433,9 @@
 			>;
 		};
 
-		pinctrl_backlight_lcd: backlight_lcdgrp {
-			fsl,pins = <
-#define GP_BACKLIGHT_LCD_ENABLE	<&gpio6 2 GPIO_ACTIVE_HIGH>
-				MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02	0x0b0b0
-			>;
-		};
-
 		pinctrl_backlight_lvds: backlight_lvdsgrp {
 			fsl,pins = <
-#define GP_BACKLIGHT_LVDS_ENABLE	<&gpio3 9 GPIO_ACTIVE_HIGH>
-				MX6QDL_PAD_EIM_DA9__GPIO3_IO09		0x0b0b0
+				MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02	0x1b0b0
 			>;
 		};
 
@@ -547,7 +542,7 @@
 
 		pinctrl_pwm3: pwm3grp {
 			fsl,pins = <
-				MX6QDL_PAD_SD1_DAT1__PWM3_OUT		0x1b0b1
+				MX6QDL_PAD_SD1_DAT1__PWM3_OUT		0x1b018
 			>;
 		};
 
