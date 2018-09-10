@@ -156,9 +156,30 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_leds>;
 
-		red {
-			gpios = <&gpio1 2 0>;
+		heartbeat {
+			gpios = <&gpio1 19 GPIO_ACTIVE_HIGH>;
 			default-state = "on";
+			linux,default-trigger = "heartbeat";
+		};
+
+		running {
+			gpios = <&gpio3 3 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
+
+		red {
+			gpios = <&gpio3 7 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		yellow {
+			gpios = <&gpio3 8 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		blue {
+			gpios = <&gpio3 6 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
 		};
 	};
 
@@ -402,7 +423,10 @@
 	imx6qdl-sabresd {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
-				MX6QDL_PAD_NANDF_D0__GPIO2_IO00 0x1b0b0
+				MX6QDL_PAD_NANDF_D0__GPIO2_IO00		0x1b0b0
+				MX6QDL_PAD_SD3_RST__GPIO7_IO08		0x1b0b0	/* wifi chip pwd */
+				MX6QDL_PAD_EIM_DA10__GPIO3_IO10		0x1b0b0	/* boot ibp */
+				MX6QDL_PAD_EIM_DA11__GPIO3_IO11		0x1b0b0	/* wdt ibp */
 			>;
 		};
 
@@ -540,6 +564,34 @@
 			>;
 		};
 
+		pinctrl_uart2: uart2grp {
+			fsl,pins = <
+				MX6QDL_PAD_EIM_D26__UART2_TX_DATA	0x1b0b1
+				MX6QDL_PAD_EIM_D27__UART2_RX_DATA	0x1b0b1
+			>;
+		};
+
+		pinctrl_uart3: uart3grp {
+			fsl,pins = <
+				MX6QDL_PAD_EIM_D25__UART3_RX_DATA	0x1b0b1
+				MX6QDL_PAD_EIM_D24__UART3_TX_DATA	0x1b0b1
+			>;
+		};
+
+		pinctrl_uart4: uart4grp {
+			fsl,pins = <
+				MX6QDL_PAD_CSI0_DAT13__UART4_RX_DATA	0x1b0b1
+				MX6QDL_PAD_CSI0_DAT12__UART4_TX_DATA	0x1b0b1
+			>;
+		};
+
+		pinctrl_uart5: uart5grp {
+			fsl,pins = <
+				MX6QDL_PAD_CSI0_DAT15__UART5_RX_DATA	0x1b0b1
+				MX6QDL_PAD_CSI0_DAT14__UART5_TX_DATA	0x1b0b1
+			>;
+		};
+
 		pinctrl_usbotg: usbotggrp {
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_1__USB_OTG_ID		0x17059
@@ -595,7 +647,11 @@
 	gpio_leds {
 		pinctrl_gpio_leds: gpioledsgrp {
 			fsl,pins = <
-				MX6QDL_PAD_GPIO_2__GPIO1_IO02 0x1b0b0
+				MX6QDL_PAD_SD1_DAT2__GPIO1_IO19		0x1b0b0 /* heartbeat led */
+				MX6QDL_PAD_EIM_DA3__GPIO3_IO03		0x1b0b0	/* running led */
+				MX6QDL_PAD_EIM_DA6__GPIO3_IO06		0x1b0b0	/* blue led */
+				MX6QDL_PAD_EIM_DA7__GPIO3_IO07		0x1b0b0	/* red led */
+				MX6QDL_PAD_EIM_DA8__GPIO3_IO08		0x1b0b0	/* yellow led */
 			>;
 		};
 	};
@@ -655,6 +711,30 @@
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
+	status = "okay";
+};
+
+&uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	status = "okay";
+};
+
+&uart3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart3>;
+	status = "okay";
+};
+
+&uart4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart4>;
+	status = "okay";
+};
+
+&uart5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart5>;
 	status = "okay";
 };
 
